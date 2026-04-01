@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiAmrut - Scalable Natural Farming Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .tab-active { border-bottom: 3px solid #059669; color: #059669; }
+        .card-gradient { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); }
+        .calc-input:focus { border-color: #059669; outline: none; box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 pb-24">
+
+    <!-- Language Selector -->
+    <div id="language-nav" class="sticky top-0 z-50 bg-white border-b shadow-sm p-3 flex overflow-x-auto gap-2 items-center">
+        <span class="text-xs font-bold text-gray-400 uppercase flex-shrink-0 mr-2">Language / மொழி / భాష / भाषा:</span>
+        <button onclick="setLanguage('en')" class="lang-btn px-4 py-1.5 rounded-full text-sm font-bold border border-emerald-600 transition" id="btn-en">English</button>
+        <button onclick="setLanguage('ta')" class="lang-btn px-4 py-1.5 rounded-full text-sm font-bold border border-gray-200" id="btn-ta">தமிழ்</button>
+        <button onclick="setLanguage('te')" class="lang-btn px-4 py-1.5 rounded-full text-sm font-bold border border-gray-200" id="btn-te">తెలుగు</button>
+        <button onclick="setLanguage('hi')" class="lang-btn px-4 py-1.5 rounded-full text-sm font-bold border border-gray-200" id="btn-hi">हिन्दी</button>
+    </div>
+
+    <!-- Header -->
+    <header class="card-gradient py-10 px-6 text-center border-b border-emerald-100">
+        <div class="max-w-4xl mx-auto">
+            <h1 id="main-title" class="text-4xl md:text-5xl font-bold text-emerald-900 mb-3">KrishiAmrut</h1>
+            <p id="main-subtitle" class="text-md md:text-lg text-emerald-700 max-w-2xl mx-auto mb-6">Scientific Bio-Inputs & Scalable Natural Farming Guide (ICAR & TNAU Standards)</p>
+            
+            <!-- Global Land Calculator -->
+            <div class="bg-white/80 backdrop-blur p-5 rounded-3xl border border-emerald-200 inline-flex flex-col items-center shadow-sm">
+                <span id="label-farm-size" class="text-xs font-bold text-emerald-800 uppercase mb-2">Configure Your Farm Size</span>
+                <div class="flex items-center gap-3">
+                    <input type="number" id="land-size" value="1" min="0.1" step="0.1" onchange="updateCalibration()" class="w-24 px-3 py-2 border-2 rounded-xl calc-input font-bold text-center text-lg text-emerald-900">
+                    <span id="label-acres" class="text-emerald-900 font-bold text-lg">Acre(s)</span>
+                </div>
+                <p id="label-calibrate-msg" class="text-[10px] text-emerald-600 mt-2 font-medium">*All ingredient quantities calibrate automatically below</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="flex justify-start md:justify-center bg-white border-b sticky top-[60px] z-40 overflow-x-auto whitespace-nowrap px-4">
+        <button onclick="showSection('formulations')" class="nav-link px-6 py-4 font-bold text-gray-600 tab-active" id="nav-form">Deep Formulations</button>
+        <button onclick="showSection('guides')" class="nav-link px-6 py-4 font-bold text-gray-600" id="nav-guide">Personalized Advice</button>
+        <button onclick="showSection('microbial')" class="nav-link px-6 py-4 font-bold text-gray-600" id="nav-micro">Microbial Life</button>
+        <button onclick="showSection('comparison')" class="nav-link px-6 py-4 font-bold text-gray-600" id="nav-comp">Comparison</button>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-4 mt-8">
+        
+        <!-- Deep Formulations Section -->
+        <section id="sec-formulations" class="content-section block space-y-8">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-emerald-800" id="form-title-h2">Scientific Bio-Input Formulations</h2>
+                <span class="text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200" id="badge-scalable">Scalable Mode ON</span>
+            </div>
+
+            <!-- Jeevamrutha -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-emerald-100">
+                <div class="bg-emerald-600 text-white px-6 py-4">
+                    <h3 class="font-bold text-xl" id="j-title">Jeevamrutha (Liquid)</h3>
+                    <p class="text-xs opacity-90" id="j-sub">Primary Soil Microbial Stimulant</p>
+                </div>
+                <div class="p-6 grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-sm font-bold text-emerald-800 mb-3 border-b pb-1" id="ing-header">Ingredients for <span class="current-acres">1</span> Acre:</h4>
+                        <ul class="text-sm space-y-3 text-gray-700 font-medium">
+                            <li class="flex justify-between"><span id="ing-water">Water</span> <span><span class="qty" data-base="200">200</span> L</span></li>
+                            <li class="flex justify-between"><span id="ing-dung">Desi Cow Dung</span> <span><span class="qty" data-base="10">10</span> kg</span></li>
+                            <li class="flex justify-between"><span id="ing-urine">Desi Cow Urine</span> <span><span class="qty" data-base="10">10</span> L</span></li>
+                            <li class="flex justify-between"><span id="ing-jaggery">Jaggery (Black)</span> <span><span class="qty" data-base="2">2</span> kg</span></li>
+                            <li class="flex justify-between"><span id="ing-flour">Pulse Flour (Besan)</span> <span><span class="qty" data-base="2">2</span> kg</span></li>
+                            <li class="flex justify-between"><span id="ing-soil">Virgin Soil</span> <span id="ing-soil-qty"><span class="qty" data-base="1">1</span> Handful</span></li>
+                        </ul>
+                    </div>
+                    <div class="text-sm text-gray-600 bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100">
+                        <h4 class="font-bold text-emerald-700 mb-2" id="guideline-header">ICAR/ZBNF Guidelines:</h4>
+                        <p id="j-guideline" class="leading-relaxed">Stir clockwise twice daily. Ferment for 48-72 hours. Apply during irrigation. Max efficacy within 7 days of preparation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beejamrutha -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-emerald-100">
+                <div class="bg-indigo-600 text-white px-6 py-4">
+                    <h3 class="font-bold text-xl" id="b-title">Beejamrutha (Seed Treatment)</h3>
+                    <p class="text-xs opacity-90" id="b-sub">Fungal & Soil Disease Protection</p>
+                </div>
+                <div class="p-6">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <ul class="text-sm space-y-2 text-gray-700 font-medium">
+                            <li class="flex justify-between"><span id="b-ing-dung">Dung</span> <span><span class="qty" data-base="5">5</span> kg</span></li>
+                            <li class="flex justify-between"><span id="b-ing-urine">Urine</span> <span><span class="qty" data-base="5">5</span> L</span></li>
+                            <li class="flex justify-between"><span id="b-ing-lime">Lime (Chuna)</span> <span><span class="qty" data-base="50">50</span> g</span></li>
+                        </ul>
+                        <div class="text-sm text-gray-600 italic" id="b-desc">Use to coat seeds before sowing. Protects from root rot and seed-borne fungus. Essential for Dryland farming.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ghanjeevamrit -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-emerald-100">
+                <div class="bg-amber-600 text-white px-6 py-4">
+                    <h3 class="font-bold text-xl" id="g-title">Ghanjeevamrit (Solid)</h3>
+                    <p class="text-xs opacity-90" id="g-sub">Dry Fermented Basal Dose</p>
+                </div>
+                <div class="p-6">
+                    <p class="text-sm mb-4 italic text-gray-600" id="g-prep">Preparation: Mix dung, urine, jaggery and flour into a thick paste. Dry in shade.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
+                            <p class="text-xs font-bold text-amber-800" id="g-dose-label">Calibrated Dose:</p>
+                            <p class="text-xl font-bold text-amber-900"><span class="qty" data-base="100">100</span> kg / <span class="current-acres">1</span> Acre</p>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
+                            <p class="text-xs font-bold text-amber-800" id="g-life-label">Shelf Life:</p>
+                            <p id="g-life-val" class="text-xl font-bold text-amber-900">6 - 8 Months</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kunapajala -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-emerald-100">
+                <div class="bg-stone-700 text-white px-6 py-4">
+                    <h3 class="font-bold text-xl" id="k-title">Kunapajala (Ancient Manure)</h3>
+                    <p class="text-xs opacity-90" id="k-sub">Vrikshayurveda Protein-Rich Liquid</p>
+                </div>
+                <div class="p-6 grid md:grid-cols-2 gap-6">
+                    <div class="text-sm">
+                        <h4 class="font-bold mb-2 text-stone-800" id="k-ing-header">Core Components:</h4>
+                        <ul class="space-y-1 text-gray-700 list-disc pl-4" id="k-list">
+                            <li>Animal/Fish waste (Flesh/Marrow)</li>
+                            <li>Sesame oil cake & Honey</li>
+                            <li>Black gram & Jaggery</li>
+                        </ul>
+                    </div>
+                    <div class="bg-stone-50 p-4 rounded-xl border text-xs leading-relaxed text-gray-600" id="k-ref">
+                        <strong>TNAU Scientific Reference:</strong> Ferment for 30 days. Dilute 1:10. Excellent for rejuvenating old fruit orchards and stress recovery.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashparni Ark -->
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-emerald-100">
+                <div class="bg-red-700 text-white px-6 py-4">
+                    <h3 class="font-bold text-xl" id="d-title">Dashparni Ark</h3>
+                    <p class="text-xs opacity-90" id="d-sub">Universal Bio-Pesticide (10 Leaves)</p>
+                </div>
+                <div class="p-6">
+                    <p class="text-sm text-gray-700 mb-4" id="d-desc">Ferment 10 medicinal bitter leaves in cow urine for 40 days to create a powerful insect repellent.</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                            <span class="text-xs block text-red-800 font-bold" id="d-ratio-label">Usage Ratio</span>
+                            <span class="text-lg font-bold" id="d-ratio-val">2.5% (2.5L in 100L Water)</span>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                            <span class="text-xs block text-red-800 font-bold" id="d-target-label">Main Target</span>
+                            <span class="text-sm font-bold" id="d-target-val">Sucking Pests & Caterpillars</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Microbial Activity Section -->
+        <section id="sec-microbial" class="content-section hidden space-y-6">
+            <h2 class="text-2xl font-bold text-emerald-800" id="micro-h2">Soil Microbiology</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-50">
+                    <h3 class="font-bold text-lg mb-2 text-emerald-700" id="m1-title">Rhizosphere Dynamics</h3>
+                    <p class="text-sm leading-relaxed text-gray-600" id="m1-desc">The area around the roots where microbes thrive. Jeevamrutha repopulates this zone with beneficial bacteria that fix nitrogen and solubilize phosphate.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-50">
+                    <h3 class="font-bold text-lg mb-2 text-emerald-700" id="m2-title">Gokripa Amrit</h3>
+                    <p class="text-sm leading-relaxed text-gray-600" id="m2-desc">A concentrated microbial culture. Once obtained, it can be multiplied indefinitely using jaggery and buttermilk to rapidly restore dead soil.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Land Guides Section -->
+        <section id="sec-guides" class="content-section hidden space-y-8">
+            <h2 class="text-2xl font-bold text-emerald-800 mb-2" id="guide-h2">Personalized Recommendation</h2>
+            <p class="text-gray-600 text-sm mb-6" id="guide-sub">Tailored strategies based on your land type and resource availability.</p>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Dryland -->
+                <div class="bg-amber-50 p-6 rounded-3xl border-2 border-amber-200">
+                    <h3 class="font-bold text-amber-900 mb-2 text-lg" id="l1-title">Dryland (Arid)</h3>
+                    <div class="space-y-4">
+                        <div class="bg-white/50 p-3 rounded-xl">
+                            <span class="text-[10px] font-bold text-amber-700 uppercase" id="rec-low-res">Low Resources</span>
+                            <p class="text-xs text-amber-900 font-medium" id="l1-low">Focus on <strong>Amrit Pani</strong> and thick straw mulching. Prioritize drought-hardy millets.</p>
+                        </div>
+                        <div class="bg-white/50 p-3 rounded-xl">
+                            <span class="text-[10px] font-bold text-amber-700 uppercase" id="rec-high-res">Full Resources</span>
+                            <p class="text-xs text-amber-900 font-medium" id="l1-high">Use <strong>Beejamrutha</strong> for seeds. Apply <strong>Ghanjeevamrit</strong> at sowing. Setup wind-breaks using local trees.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rainfed -->
+                <div class="bg-emerald-50 p-6 rounded-3xl border-2 border-emerald-200">
+                    <h3 class="font-bold text-emerald-900 mb-2 text-lg" id="l2-title">Rainfed (Watershed)</h3>
+                    <div class="space-y-4">
+                        <div class="bg-white/50 p-3 rounded-xl">
+                            <span class="text-[10px] font-bold text-emerald-700 uppercase" id="rec-low-res2">Low Resources</span>
+                            <p class="text-xs text-emerald-900 font-medium" id="l2-low">Contour digging. Use <strong>Sanjivak</strong> (Quick fermentation) to boost soil during short monsoon spells.</p>
+                        </div>
+                        <div class="bg-white/50 p-3 rounded-xl">
+                            <span class="text-[10px] font-bold text-emerald-700 uppercase" id="rec-high-res2">Full Resources</span>
+                            <p class="text-xs text-emerald-900 font-medium" id="l2-high">Integrate <strong>Horticulture</strong>. Use liquid <strong>Jeevamrutha</strong> via trenching. Focus on moisture harvesting.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Irrigated -->
+                <div class="bg-blue-50 p-6 rounded-3xl border-2 border-blue-200">
+                    <h3 class="font-bold text-blue-900 mb-2 text-lg" id="l3-title">Irrigated (Wet)</h3>
+                    <div class="space-y-4">
+                        <div class="bg-white/50 p-3 rounded-xl">
+                            <span class="text-[10px] font-bold text-blue-700 uppercase" id="rec-low-res3">Low Resources</span>
+                            <p class="text-xs text-blue-900 font-medium" id="l3-low">Shift to <strong>Waphasa</strong> (Aeration) technique. Use <strong>FAA</strong> (Fish Amino) for nitrogen needs.</p>
+                        </div>
+                        <div class="bg-white/50 p-3 rounded-xl">
+                            <span class="text-[10px] font-bold text-blue-700 uppercase" id="rec-high-res3">Full Resources</span>
+                            <p class="text-xs text-blue-900 font-medium" id="l3-high">Multi-cropping system. Use <strong>Panchagavya</strong> foliar spray. High density <strong>Kunapajala</strong> application.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison Section -->
+        <section id="sec-comparison" class="content-section hidden">
+            <h2 class="text-2xl font-bold text-emerald-800 mb-6" id="comp-h2">Natural vs. Chemical</h2>
+            <div class="overflow-x-auto rounded-2xl border shadow-sm">
+                <table class="w-full text-left bg-white">
+                    <thead>
+                        <tr class="bg-gray-50 border-b">
+                            <th class="p-4 font-bold" id="th-feat">Feature</th>
+                            <th class="p-4 font-bold text-emerald-700" id="th-nat">Natural (ZBNF)</th>
+                            <th class="p-4 font-bold text-red-700" id="th-chem">Chemical</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y">
+                        <tr><td class="p-4 font-medium" id="td-cost">Input Cost</td><td class="p-4" id="td-cost-n">Near Zero</td><td class="p-4" id="td-cost-c">Very High</td></tr>
+                        <tr><td class="p-4 font-medium" id="td-water">Water Needs</td><td class="p-4" id="td-water-n">90% Less</td><td class="p-4" id="td-water-c">Very High</td></tr>
+                        <tr><td class="p-4 font-medium" id="td-soil">Soil Health</td><td class="p-4" id="td-soil-n">Self-Rejuvenating</td><td class="p-4" id="td-soil-c">Degrading</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Global Footer -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t p-4 flex justify-between items-center shadow-lg z-50">
+        <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">KrishiAmrut v3.1</span>
+        </div>
+        <button onclick="shareLink()" class="bg-emerald-600 text-white px-8 py-2.5 rounded-2xl font-bold text-sm shadow-lg hover:bg-emerald-700 transition flex items-center gap-2">
+            Share App
+        </button>
+    </div>
+
+    <!-- Alert Box -->
+    <div id="toast" class="fixed top-24 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full text-sm font-medium opacity-0 pointer-events-none transition-all duration-300 z-[100]">
+        Updated!
+    </div>
+
+    <script>
+        let currentLang = 'en';
+
+        const translations = {
+            en: {
+                title: "KrishiAmrut",
+                subtitle: "Scientific Bio-Inputs & Scalable Natural Farming Guide (ICAR & TNAU Standards)",
+                farmSize: "Configure Your Farm Size",
+                acres: "Acre(s)",
+                calcMsg: "*All ingredient quantities calibrate automatically below",
+                navForm: "Deep Formulations",
+                navMicro: "Microbial Life",
+                navGuide: "Personalized Advice",
+                navComp: "Comparison",
+                h2Form: "Scientific Bio-Input Formulations",
+                badgeScalable: "Scalable Mode ON",
+                // Jeevamrutha
+                jTitle: "Jeevamrutha (Liquid)",
+                jSub: "Primary Soil Microbial Stimulant",
+                ingFor: "Ingredients for",
+                ingWater: "Water", ingDung: "Desi Cow Dung", ingUrine: "Desi Cow Urine", 
+                ingJaggery: "Jaggery (Black)", ingFlour: "Pulse Flour (Besan)", ingSoil: "Virgin Soil",
+                ingSoilQty: "1 Handful",
+                guidelineH: "ICAR/ZBNF Guidelines:",
+                jGuide: "Stir clockwise twice daily. Ferment for 48-72 hours. Apply during irrigation. Max efficacy within 7 days of preparation.",
+                // Beejamrutha
+                bTitle: "Beejamrutha (Seeds)",
+                bSub: "Seed & Soil Protection",
+                bIngD: "Cow Dung", bIngU: "Cow Urine", bIngL: "Lime",
+                bDesc: "Coat seeds before sowing. Essential for Dryland/Rainfed farming to prevent rot.",
+                // Ghanjeevamrit
+                gTitle: "Ghanjeevamrit (Solid)",
+                gSub: "Dry Fermented Basal Dose",
+                gPrep: "Preparation: Mix dung, urine, jaggery and flour into a thick paste. Dry in shade.",
+                gDoseL: "Calibrated Dose:",
+                gLifeL: "Shelf Life:",
+                gLifeV: "6 - 8 Months",
+                // Kunapajala
+                kTitle: "Kunapajala (Ancient Manure)",
+                kSub: "Vrikshayurveda Protein-Rich Liquid",
+                kIngH: "Core Components:",
+                kList: "<li>Animal/Fish waste</li><li>Sesame cake & Honey</li><li>Black gram & Jaggery</li>",
+                kRef: "<strong>TNAU Reference:</strong> Ferment for 30 days. Dilute 1:10. Excellent for rejuvenation.",
+                // Dashparni
+                dTitle: "Dashparni Ark",
+                dSub: "Universal Bio-Pesticide (10 Leaves)",
+                dDesc: "Ferment 10 medicinal bitter leaves in cow urine for 40 days to create a powerful insect repellent.",
+                dRatioL: "Usage Ratio",
+                dRatioV: "2.5% (2.5L in 100L Water)",
+                dTargetL: "Main Target",
+                dTargetV: "Sucking Pests & Caterpillars",
+                // Microbial
+                mH2: "Soil Microbiology",
+                m1T: "Rhizosphere Dynamics",
+                m1D: "Root zone activity. Bacteria fix nitrogen and solubilize phosphate.",
+                m2T: "Gokripa Amrit",
+                m2D: "Concentrated culture. Can be multiplied with jaggery and buttermilk.",
+                // Personalized Guides
+                gH2: "Personalized Recommendation",
+                gSub: "Tailored strategies based on your land type and resource availability.",
+                l1T: "Dryland (Arid)",
+                l2T: "Rainfed (Monsoon)",
+                l3T: "Irrigated (Wet)",
+                resLow: "Low Resources",
+                resHigh: "Full Resources",
+                l1Low: "Focus on Amrit Pani and thick straw mulching. Prioritize drought-hardy millets.",
+                l1High: "Use Beejamrutha. Apply Ghanjeevamrit at sowing. Setup wind-breaks.",
+                l2Low: "Contour digging. Use Sanjivak (Quick fermentation) to boost soil during rains.",
+                l2High: "Integrate Horticulture. Use liquid Jeevamrutha via trenching. Focus on moisture harvesting.",
+                l3Low: "Shift to Waphasa (Aeration). Use FAA (Fish Amino) for nitrogen needs.",
+                l3High: "Multi-cropping. Use Panchagavya foliar spray. High density Kunapajala.",
+                // Comparison
+                compH2: "Natural vs. Chemical",
+                thFeat: "Feature", thNat: "Natural (ZBNF)", thChem: "Chemical",
+                tdCost: "Input Cost", tdCostN: "Near Zero", tdCostC: "Very High",
+                tdWater: "Water Needs", tdWaterN: "90% Less", tdWaterC: "Very High",
+                tdSoil: "Soil Health", tdSoilN: "Self-Rejuvenating", tdSoilC: "Degrading"
+            },
+            ta: {
+                title: "கிருஷ்ணாம்ருத்",
+                subtitle: "அறிவியல் ரீதியான இயற்கை விவசாய வழிகாட்டி (ICAR & TNAU தரநிலைகள்)",
+                farmSize: "உங்கள் நிலத்தின் அளவை உள்ளிடவும்",
+                acres: "ஏக்கர்",
+                calcMsg: "*அனைத்து பொருட்களும் உங்கள் நிலத்திற்கு ஏற்ப தானாக கணக்கிடப்படும்",
+                navForm: "விரிவான கரைசல்கள்",
+                navMicro: "நுண்ணுயிர் செயல்பாடு",
+                navGuide: "தனிப்பயனாக்கப்பட்ட ஆலோசனை",
+                navComp: "ஒப்பீடு",
+                h2Form: "அறிவியல் பயிர் ஊக்கிகள்",
+                badgeScalable: "தானியங்கி கணக்கீடு தயார்",
+                jTitle: "ஜீவாமிர்தம் (திரவம்)",
+                jSub: "மண் நுண்ணுயிர் ஊக்கி",
+                ingFor: "தேவையான பொருட்கள்",
+                ingWater: "தண்ணீர்", ingDung: "நாட்டு பசுஞ்சாணம்", ingUrine: "நாட்டு கோமியம்",
+                ingJaggery: "கருப்பு வெல்லம்", ingFlour: "பயறு மாவு", ingSoil: "புற்று மண்",
+                ingSoilQty: "1 கைப்பிடி",
+                guidelineH: "ICAR/TNAU வழிகாட்டுதல்:",
+                jGuide: "கடிகாரச் சுற்றில் இருமுறை கலக்கவும். 48-72 மணிநேரம் ஊறவிடவும். 7 நாட்களுக்குள் பயன்படுத்தவும்.",
+                bTitle: "பீஜாமிர்தம் (விதை நேர்த்தி)",
+                bSub: "விதை மற்றும் மண் பாதுகாப்பு",
+                bIngD: "சாணம்", bIngU: "கோமியம்", bIngL: "சுண்ணாம்பு",
+                bDesc: "விதைப்பதற்கு முன் விதைகளில் பூசவும். வேர் அழுகலைத் தடுக்க மானாவாரி நிலங்களுக்கு மிக முக்கியம்.",
+                gTitle: "கனஜீவாமிர்தம் (திட நிலை)",
+                gSub: "அடிப்படை உரம்",
+                gPrep: "தயாரிப்பு: சாணம் மற்றும் இதர பொருட்களை கலந்து நிழலில் உலர்த்தவும்.",
+                gDoseL: "பரிந்துரைக்கப்பட்ட அளவு:",
+                gLifeL: "சேமிப்பு காலம்:",
+                gLifeV: "6 - 8 மாதங்கள்",
+                kTitle: "குணபஜலம் (பண்டைய முறை)",
+                kSub: "புரதம் மிகுந்த இயற்கை ஊக்கி",
+                kIngH: "முக்கிய பொருட்கள்:",
+                kList: "<li>விலங்கு/மீன் கழிவுகள்</li><li>எள் புண்ணாக்கு & தேன்</li><li>உளுந்து & வெல்லம்</li>",
+                kRef: "<strong>TNAU குறிப்பு:</strong> 30 நாட்கள் ஊறவிடவும். 1:10 விகிதத்தில் நீரில் கலந்து தெளிக்கவும்.",
+                dTitle: "தசபர்ணி அர்க்கு",
+                dSub: "மூலிகை பூச்சி விரட்டி (10 இலைகள்)",
+                dDesc: "10 வகையான இலைகளை கோமியத்தில் 40 நாட்கள் ஊறவைத்து தயாரிக்கப்படும் பூச்சி விரட்டி.",
+                dRatioL: "தெளிப்பு விகிதம்",
+                dRatioV: "2.5% (100லி தண்ணீரில் 2.5லி)",
+                dTargetL: "முக்கிய இலக்கு",
+                dTargetV: "சாறு உறிஞ்சும் பூச்சிகள் & புழுக்கள்",
+                mH2: "மண் நுண்ணுயிரியல்",
+                m1T: "வேர் மண்டல செயல்பாடு",
+                m1D: "வேர் பகுதிகளில் பாக்டீரியாக்கள் நைட்ரஜனை நிலைநிறுத்தி மண்ணை வளமாக்கும்.",
+                m2T: "கோகிருபா அமிர்தம்",
+                m2D: "அடர்த்தியான நுண்ணுயிர் கலவை. வெல்லம் மற்றும் மோர் கொண்டு வாழ்நாள் முழுவதும் பெருக்கலாம்.",
+                gH2: "தனிப்பயனாக்கப்பட்ட ஆலோசனை",
+                gSub: "நில வகை மற்றும் வசதிக்கு ஏற்ப உங்களுக்கான சிறந்த முறைகள்.",
+                l1T: "புஞ்சை / மானாவாரி (Dryland)",
+                l2T: "மழையாதாரம் (Rainfed)",
+                l3T: "நஞ்சை / பாசனம் (Irrigated)",
+                resLow: "குறைந்த வசதிகள்",
+                resHigh: "முழு வசதிகள்",
+                l1Low: "அமிர்த பாணி மற்றும் தடிமனான மூடாக்கு (Mulching) பயன்படுத்தவும். சிறுதானியங்களுக்கு முன்னுரிமை அளிக்கவும்.",
+                l1High: "பீஜாமிர்தம் பயன்படுத்தவும். கனஜீவாமிர்தத்தை அடியில் இடவும். காற்றுத் தடுப்பு வேலிகளை அமைக்கவும்.",
+                l2Low: "வரப்பு அமைக்கவும். சஞ்சீவக் (விரைவு தயாரிப்பு) மூலம் மண்ணை வளப்படுத்தவும்.",
+                l2High: "தோட்டக்கலை பயிர்களை பயிரிடவும். திரவ ஜீவாமிர்தத்தை வாய்க்கால்களில் செலுத்தி ஈரப்பதத்தை காக்கவும்.",
+                l3Low: "வாப்சா (காற்றோட்டம்) முறைக்கு மாறவும். நைட்ரஜன் தேவைக்கு மீன் அமிலம் (FAA) பயன்படுத்தவும்.",
+                l3High: "பல்வேறு பயிர் சாகுபடி. பஞ்சகவ்யம் தெளிக்கவும். அதிக அடர்த்தி கொண்ட குணபஜலம் பயன்படுத்தவும்.",
+                compH2: "இயற்கை vs இரசாயனம்",
+                thFeat: "அம்சம்", thNat: "இயற்கை (ZBNF)", thChem: "இரசாயனம்",
+                tdCost: "செலவு", tdCostN: "மிகக் குறைவு", tdCostC: "மிக அதிகம்",
+                tdWater: "நீர் தேவை", tdWaterN: "90% குறைவு", tdWaterC: "மிக அதிகம்",
+                tdSoil: "மண் வளம்", tdSoilN: "சுயமாக மீட்கப்படும்", tdSoilC: "பாழாகும்"
+            },
+            te: {
+                title: "కృషీఅమృతం",
+                subtitle: "శాస్త్రీయ ప్రకృతి వ్యవసాయ మార్గదర్శి (ICAR & TNAU ప్రమాణాలు)",
+                farmSize: "మీ భూమి పరిమాణాన్ని నమోదు చేయండి",
+                acres: "ఎకరం(లు)",
+                calcMsg: "*అన్ని పదార్థాలు మీ భూమికి అనుగుణంగా లెక్కించబడతాయి",
+                navForm: "లోతైన సూత్రాలు",
+                navMicro: "సూక్ష్మజీవుల చర్య",
+                navGuide: "వ్యక్తిగత సలహా",
+                navComp: "పోలిక",
+                h2Form: "శాస్త్రీయ బయో-ఇన్పుట్ సూత్రాలు",
+                badgeScalable: "స్కేలబుల్ మోడ్ ఆన్",
+                jTitle: "జీవామృతం (ద్రవం)",
+                jSub: "నేల సూక్ష్మజీవుల ప్రేరేపకం",
+                ingFor: "కావలసిన పదార్థాలు",
+                ingWater: "నీరు", ingDung: "దేశీ ఆవు పేడ", ingUrine: "దేశీ ఆవు మూత్రం",
+                ingJaggery: "నల్ల బెల్లం", ingFlour: "పిండి", ingSoil: "మట్టి",
+                ingSoilQty: "1 పిడికెడు",
+                guidelineH: "ICAR/TNAU మార్గదర్శకాలు:",
+                jGuide: "రోజుకు రెండుసార్లు కలపండి. 48-72 గంటల పాటు పులియబెట్టండి. సాగు నీటి ద్వారా అందించండి.",
+                bTitle: "బీజామృతం (విత్తన శుద్ధి)",
+                bSub: "విత్తన మరియు నేల రక్షణ",
+                bIngD: "పేడ", bIngU: "మూత్రం", bIngL: "సున్నం",
+                bDesc: "విత్తే ముందు విత్తనాలకు పూయండి. వేరు కుళ్లును నిరోధించడానికి మెట్ట భూములకు చాలా అవసరం.",
+                gTitle: "ఘనజీవామృతం (ఘన రూపం)",
+                gSub: "బేసల్ డోస్",
+                gPrep: "తయారీ: పేడ, మూత్రం, బెల్లం కలిపి ఉండలుగా చేసి నీడలో ఎండబెట్టండి.",
+                gDoseL: "డోసేజ్:",
+                gLifeL: "నిల్వ కాలం:",
+                gLifeV: "6 - 8 నెలలు",
+                kTitle: "కుణపజలం (పురాతన ఎరువు)",
+                kSub: "ప్రోటీన్ ద్రవం",
+                kIngH: "ముఖ్య భాగాలు:",
+                kList: "<li>జంతు వ్యర్థాలు</li><li>నువ్వుల పిండి & తేనె</li><li>బెల్లం</li>",
+                kRef: "<strong>TNAU రిఫరెన్స్:</strong> 30 రోజుల పాటు పులియబెట్టండి. 1:10 నిష్పత్తిలో వాడండి.",
+                dTitle: "దశపర్ణి అర్క్",
+                dSub: "పురుగుమందు (10 ఆకులు)",
+                dDesc: "10 రకాల ఆకులను ఆవు మూత్రంలో 40 రోజుల పాటు పులియబెట్టి తయారు చేసే పురుగుమందు.",
+                dRatioL: "వాడకం",
+                dRatioV: "2.5% (100లీ నీటిలో 2.5లీ)",
+                dTargetL: "లక్ష్యం",
+                dTargetV: "రసం పీల్చే పురుగులు",
+                mH2: "నేల సూక్ష్మజీవశాస్త్రం",
+                m1T: "రైజోస్పియర్",
+                m1D: "వేర్ల చుట్టూ సూక్ష్మజీవులు నత్రజనిని స్థిరీకరించి మొక్కకు బలాన్ని ఇస్తాయి.",
+                m2T: "గోకృప అమృత్",
+                m2D: "సూక్ష్మజీవుల సంస్కృతి. బెల్లం మరియు మజ్జిగతో పెంచుకోవచ్చు.",
+                gH2: "వ్యక్తిగత సిఫార్సు",
+                gSub: "మీ భూమి మరియు వనరుల ఆధారంగా ప్రత్యేక వ్యూహాలు.",
+                l1T: "మెట్ట భూమి (Dryland)",
+                l2T: "వర్షాధారం (Rainfed)",
+                l3T: "మాగాణి (Irrigated)",
+                resLow: "తక్కువ వనరులు",
+                resHigh: "పూర్తి వనరులు",
+                l1Low: "అమృత పాని మరియు మల్చింగ్ వాడండి. తక్కువ నీరు అవసరమయ్యే చిరుధాన్యాలు పండించండి.",
+                l1High: "బీజామృతం వాడండి. విత్తే సమయంలో ఘనజీవామృతం వేయండి. గాలి నిరోధక చెట్లను నాటండి.",
+                l2Low: "గట్లు వేయండి. సంజీవక్ వాడి నేల సారాన్ని పెంచండి.",
+                l2High: "ఉద్యానవన పంటలు వేయండి. ద్రవ జీవామృతాన్ని కందకాల ద్వారా అందించండి.",
+                l3Low: "వాప్సా పద్ధతికి మారండి. నత్రజని కోసం ఫిష్ అమినో (FAA) వాడండి.",
+                l3High: "బహుళ పంటల సాగు. పంచగవ్య స్ప్రే చేయండి. కుణపజలం వాడండి.",
+                compH2: "ప్రకృతి vs రసాయనం",
+                thFeat: "ఫీచర్", thNat: "ప్రకృతి (ZBNF)", thChem: "రసాయనం",
+                tdCost: "ఖర్చు", tdCostN: "చాలా తక్కువ", tdCostC: "చాలా ఎక్కువ",
+                tdWater: "నీటి అవసరం", tdWaterN: "90% తక్కువ", tdWaterC: "చాలా ఎక్కువ",
+                tdSoil: "నేల ఆరోగ్యం", tdSoilN: "మెరుగుపడుతుంది", tdSoilC: "క్షీణిస్తుంది"
+            },
+            hi: {
+                title: "कृषिअमृत",
+                subtitle: "प्राकृतिक खेती मार्गदर्शक (ICAR और TNAU मानक)",
+                farmSize: "खेत का आकार दर्ज करें",
+                acres: "एकड़",
+                calcMsg: "*सामग्री आपके खेत के अनुसार बदल जाएगी",
+                navForm: "विस्तृत घोल",
+                navMicro: "सूक्ष्मजीव गतिविधि",
+                navGuide: "व्यक्तिगत सलाह",
+                navComp: "तुलना",
+                h2Form: "वैज्ञानिक बायो-इनपुट फॉर्मूला",
+                badgeScalable: "स्केलेबल मोड चालू",
+                jTitle: "जीवामृत (तरल)",
+                jSub: "मुख्य मृदा सूक्ष्मजीव उत्प्रेरक",
+                ingFor: "सामग्री",
+                ingWater: "पानी", ingDung: "देशी गोबर", ingUrine: "गोमूत्र",
+                ingJaggery: "काला गुड़", ingFlour: "बेसन", ingSoil: "मिट्टी",
+                ingSoilQty: "1 मुट्ठी",
+                guidelineH: "ICAR/TNAU दिशानिर्देश:",
+                jGuide: "दिन में दो बार घुमाएं। 48-72 घंटे किण्वित करें। सिंचाई के साथ प्रयोग करें।",
+                bTitle: "बीजामृत (बीज उपचार)",
+                bSub: "बीज एवं मृदा सुरक्षा",
+                bIngD: "गोबर", bIngU: "गोमूत्र", bIngL: "चूना",
+                bDesc: "बुवाई से पहले बीज पर लगाएं। शुष्क भूमि के लिए सड़न रोकने हेतु अनिवार्य।",
+                gTitle: "घनजीवामृत (ठोस)",
+                gSub: "सूखी खाद",
+                gPrep: "तैयारी: गोबर और सामग्री का लेप बनाकर छाया में सुखाएं।",
+                gDoseL: "खुराक:",
+                gLifeL: "भंडारण:",
+                gLifeV: "6 - 8 महीने",
+                kTitle: "कुणपजल (प्राचीन खाद)",
+                kSub: "प्रोटीन युक्त घोल",
+                kIngH: "मुख्य घटक:",
+                kList: "<li>पशु अवशेष</li><li>तिल खली और शहद</li><li>गुड़</li>",
+                kRef: "<strong>TNAU संदर्भ:</strong> 30 दिनों तक किण्वित करें। 1:10 के अनुपात में प्रयोग करें।",
+                dTitle: "दशपर्णी अर्क",
+                dSub: "कीटनाशक (10 पत्ते)",
+                dDesc: "10 कड़वे पत्तों को गोमूत्र में 40 दिनों तक किण्वित करें।",
+                dRatioL: "अनुपात",
+                dRatioV: "2.5% (100L पानी में 2.5L)",
+                dTargetL: "लक्ष्य",
+                dTargetV: "चूसने वाले कीट",
+                mH2: "मिट्टी का सूक्ष्मजीव विज्ञान",
+                m1T: "राइजोस्फीयर",
+                m1D: "जड़ क्षेत्र की गतिविधि। बैक्टीरिया नाइट्रोजन स्थिर करते हैं।",
+                m2T: "गोकृपा अमृत",
+                m2D: "सघन कल्चर। गुड़ और छाछ से बढ़ाया जा सकता है।",
+                gH2: "व्यक्तिगत सलाह",
+                gSub: "आपकी भूमि और संसाधनों के आधार पर विशिष्ट रणनीतियाँ।",
+                l1T: "शुष्क भूमि (Dryland)",
+                l2T: "वर्षा आधारित (Rainfed)",
+                l3T: "सिंचित भूमि (Irrigated)",
+                resLow: "कम संसाधन",
+                resHigh: "पूर्ण संसाधन",
+                l1Low: "अमृत पानी और मल्चिंग का उपयोग करें। कम पानी वाली फसलों को प्राथमिकता दें।",
+                l1High: "बीजामृत का प्रयोग करें। बुवाई पर घनजीवामृत डालें। वृक्षारोपण करें।",
+                l2Low: "मेड़बंदी करें। संजीवक का प्रयोग कर मिट्टी सुधारें।",
+                l2High: "बागवानी अपनाएं। तरल जीवामृत को गड्ढों में डालें। नमी संचयन पर ध्यान दें।",
+                l3Low: "वापसा तकनीक अपनाएं। नाइट्रोजन के लिए फिश अमीनो (FAA) उपयोग करें।",
+                l3High: "बहु-फसली खेती। पंचगव्य का छिड़काव करें। कुणपजल का प्रयोग करें।",
+                compH2: "प्राकृतिक बनाम रासायनिक",
+                thFeat: "विशेषता", thNat: "प्राकृतिक (ZBNF)", thChem: "रासायनिक",
+                tdCost: "लागत", tdCostN: "नगण्य", tdCostC: "बहुत अधिक",
+                tdWater: "पानी", tdWaterN: "90% कम", tdWaterC: "बहुत अधिक",
+                tdSoil: "स्वास्थ्य", tdSoilN: "सुधार", tdSoilC: "खराब"
+            }
+        };
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang] || translations['en'];
+            
+            // Text Content Updates
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('main-subtitle').innerText = t.subtitle;
+            document.getElementById('label-farm-size').innerText = t.farmSize;
+            document.getElementById('label-acres').innerText = t.acres;
+            document.getElementById('label-calibrate-msg').innerText = t.calcMsg;
+            
+            document.getElementById('nav-form').innerText = t.navForm;
+            document.getElementById('nav-micro').innerText = t.navMicro;
+            document.getElementById('nav-guide').innerText = t.navGuide;
+            document.getElementById('nav-comp').innerText = t.navComp;
+            
+            document.getElementById('form-title-h2').innerText = t.h2Form;
+            document.getElementById('badge-scalable').innerText = t.badgeScalable;
+            
+            // Formulations
+            document.getElementById('j-title').innerText = t.jTitle;
+            document.getElementById('j-sub').innerText = t.jSub;
+            document.getElementById('ing-header').innerHTML = `${t.ingFor} <span class="current-acres">${document.getElementById('land-size').value}</span> ${t.acres}:`;
+            document.getElementById('ing-water').innerText = t.ingWater;
+            document.getElementById('ing-dung').innerText = t.ingDung;
+            document.getElementById('ing-urine').innerText = t.ingUrine;
+            document.getElementById('ing-jaggery').innerText = t.ingJaggery;
+            document.getElementById('ing-flour').innerText = t.ingFlour;
+            document.getElementById('ing-soil').innerText = t.ingSoil;
+            document.getElementById('ing-soil-qty').innerHTML = `<span class="qty" data-base="1">${document.getElementById('land-size').value}</span> ${t.ingSoilQty}`;
+            document.getElementById('guideline-header').innerText = t.guidelineH;
+            document.getElementById('j-guideline').innerText = t.jGuide;
+
+            document.getElementById('b-title').innerText = t.bTitle;
+            document.getElementById('b-sub').innerText = t.bSub;
+            document.getElementById('b-ing-dung').innerText = t.bIngD;
+            document.getElementById('b-ing-urine').innerText = t.bIngU;
+            document.getElementById('b-ing-lime').innerText = t.bIngL;
+            document.getElementById('b-desc').innerText = t.bDesc;
+
+            document.getElementById('g-title').innerText = t.gTitle;
+            document.getElementById('g-sub').innerText = t.gSub;
+            document.getElementById('g-prep').innerText = t.gPrep;
+            document.getElementById('g-dose-label').innerText = t.gDoseL;
+            document.getElementById('g-life-label').innerText = t.gLifeL;
+            document.getElementById('g-life-val').innerText = t.gLifeV;
+
+            document.getElementById('k-title').innerText = t.kTitle;
+            document.getElementById('k-sub').innerText = t.kSub;
+            document.getElementById('k-ing-header').innerText = t.kIngH;
+            document.getElementById('k-list').innerHTML = t.kList;
+            document.getElementById('k-ref').innerHTML = t.kRef;
+
+            document.getElementById('d-title').innerText = t.dTitle;
+            document.getElementById('d-sub').innerText = t.dSub;
+            document.getElementById('d-desc').innerText = t.dDesc;
+            document.getElementById('d-ratio-label').innerText = t.dRatioL;
+            document.getElementById('d-ratio-val').innerText = t.dRatioV;
+            document.getElementById('d-target-label').innerText = t.dTargetL;
+            document.getElementById('d-target-val').innerText = t.dTargetV;
+
+            // Micro
+            document.getElementById('micro-h2').innerText = t.mH2;
+            document.getElementById('m1-title').innerText = t.m1T;
+            document.getElementById('m1-desc').innerText = t.m1D;
+            document.getElementById('m2-title').innerText = t.m2T;
+            document.getElementById('m2-desc').innerText = t.m2D;
+
+            // Personalized Recommendation
+            document.getElementById('guide-h2').innerText = t.gH2;
+            document.getElementById('guide-sub').innerText = t.gSub;
+            document.getElementById('l1-title').innerText = t.l1T;
+            document.getElementById('l2-title').innerText = t.l2T;
+            document.getElementById('l3-title').innerText = t.l3T;
+            document.getElementById('rec-low-res').innerText = t.resLow;
+            document.getElementById('rec-high-res').innerText = t.resHigh;
+            document.getElementById('rec-low-res2').innerText = t.resLow;
+            document.getElementById('rec-high-res2').innerText = t.resHigh;
+            document.getElementById('rec-low-res3').innerText = t.resLow;
+            document.getElementById('rec-high-res3').innerText = t.resHigh;
+            document.getElementById('l1-low').innerText = t.l1Low;
+            document.getElementById('l1-high').innerText = t.l1High;
+            document.getElementById('l2-low').innerText = t.l2Low;
+            document.getElementById('l2-high').innerText = t.l2High;
+            document.getElementById('l3-low').innerText = t.l3Low;
+            document.getElementById('l3-high').innerText = t.l3High;
+
+            // Comp
+            document.getElementById('comp-h2').innerText = t.compH2;
+            document.getElementById('th-feat').innerText = t.thFeat;
+            document.getElementById('th-nat').innerText = t.thNat;
+            document.getElementById('th-chem').innerText = t.thChem;
+            document.getElementById('td-cost').innerText = t.tdCost;
+            document.getElementById('td-cost-n').innerText = t.tdCostN;
+            document.getElementById('td-cost-c').innerText = t.tdCostC;
+            document.getElementById('td-water').innerText = t.tdWater;
+            document.getElementById('td-water-n').innerText = t.tdWaterN;
+            document.getElementById('td-water-c').innerText = t.tdWaterC;
+            document.getElementById('td-soil').innerText = t.tdSoil;
+            document.getElementById('td-soil-n').innerText = t.tdSoilN;
+            document.getElementById('td-soil-c').innerText = t.tdSoilC;
+
+            // UI Button Highlighting
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('border-emerald-600', 'bg-emerald-50');
+                btn.classList.add('border-gray-200');
+            });
+            document.getElementById(`btn-${lang}`).classList.add('border-emerald-600', 'bg-emerald-50');
+            
+            updateCalibration();
+        }
+
+        function updateCalibration() {
+            const size = parseFloat(document.getElementById('land-size').value) || 1;
+            document.querySelectorAll('.current-acres').forEach(el => el.innerText = size);
+            
+            document.querySelectorAll('.qty').forEach(el => {
+                const base = parseFloat(el.getAttribute('data-base'));
+                if (!isNaN(base)) {
+                    el.innerText = (base * size).toFixed(1).replace(/\.0$/, '');
+                }
+            });
+
+            const toast = document.getElementById('toast');
+            toast.style.opacity = '1';
+            setTimeout(() => toast.style.opacity = '0', 1500);
+        }
+
+        function showSection(id) {
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(`sec-${id}`).classList.remove('hidden');
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('tab-active'));
+            if(event) event.currentTarget.classList.add('tab-active');
+        }
+
+        function shareLink() {
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = window.location.href;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            
+            const toast = document.getElementById('toast');
+            toast.innerText = "Link Copied!";
+            toast.style.opacity = '1';
+            setTimeout(() => toast.style.opacity = '0', 2000);
+        }
+
+        window.onload = () => {
+            setLanguage('en');
+        };
+    </script>
+</body>
+</html>
